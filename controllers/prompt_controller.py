@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from controllers.controller import Controller
-from models.prompt_models import CreatePromptDto, GetPromptDto, UpdatePromptDto
+from models.prompt_models import CreatePromptDto, GetPromptDto, UpdatePromptDto, ListPromptDto
 
 
 class PromptController(Controller):
@@ -35,26 +35,20 @@ class PromptController(Controller):
         :param prompt_name: prompt name
         :return:
         """
-        try:
-            prompt = self.collection.find_one({"name": prompt_name})
-            if prompt is None:
-                raise HTTPException(status_code=404, detail="Prompt not found")
-            return GetPromptDto.from_dict(prompt)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        prompt = self.collection.find_one({"name": prompt_name})
+        if prompt is None:
+            raise HTTPException(status_code=404, detail="Prompt not found")
+        return GetPromptDto.from_dict(prompt)
 
     def get_all_prompts(self):
         """
         Get all prompts
         :return:
         """
-        try:
-            prompts = self.collection.find()
-            if prompts is None:
-                raise HTTPException(status_code=404, detail="No prompts found")
-            return [GetPromptDto.from_dict(prompt) for prompt in prompts]
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        prompts = self.collection.find()
+        if prompts is None:
+            return HTTPException(status_code=404, detail="No prompts found")
+        return ListPromptDto.from_list(prompts)
 
     def update_prompt(self, prompt_name: str, prompt: UpdatePromptDto):
         try:
