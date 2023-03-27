@@ -8,6 +8,8 @@ class TestCreateMessageDto(TestCase):
         message = CreateMessageDto(
             role=Role.SYSTEM,
             content="Hello {{ name }}",
+            audio=None,
+            image=None
         )
         message.render(extra_data={"name": "John"})
         self.assertEqual(message.content, "Hello John")
