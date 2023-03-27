@@ -47,6 +47,21 @@ class GetPromptDto:
 
 
 @dataclass
+class ListPromptDto:
+    name: str
+
+    @staticmethod
+    def from_dict(data: dict) -> "ListPromptDto":
+        return ListPromptDto(
+            name=data["name"]
+        )
+
+    @staticmethod
+    def from_list(data: list) -> list:
+        return [ListPromptDto.from_dict(item) for item in data]
+
+
+@dataclass
 class UpdatePromptDto:
     """
     Update prompt dto
