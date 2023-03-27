@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+pymongo = "*"
+boto3 = "*"
+certifi = "*"
+python-jose = "*"
+openai = "*"
+jinja2 = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
