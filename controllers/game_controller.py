@@ -40,18 +40,17 @@ class GameController(Controller):
         :param user_id:
         :return:
         """
-        try:
-            session = self.collection.find_one({"user": user_id})
-            messages = []
-            # Get the selections for each message
-            for message in session['messages']:
-                message_with_selections = get_selections(message['content'])
-                message['content'] = message_with_selections
-                messages.append(message)
-            session['messages'] = messages
-            return GetGameSessionDto.from_dict(session)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        session = self.collection.find_one({"user": user_id})
+        if session is None:
+            raise HTTPException(status_code=404, detail="No session found. Please create a new session.")
+        messages = []
+        # Get the selections for each message
+        for message in session['messages']:
+            message_with_selections = get_selections(message['content'])
+            message['content'] = message_with_selections
+            messages.append(message)
+        session['messages'] = messages
+        return GetGameSessionDto.from_dict(session)
 
     def chat(self, user_id: str, message: Optional[str] = None,
              extra_data: Optional[dict] = None) -> ChatMessageResponseDto:
