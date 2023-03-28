@@ -141,7 +141,7 @@ class GameController(Controller):
             if prompt is None:
                 raise HTTPException(status_code=404, detail="Prompt not found: " + data.prompt_name)
             data = self.collection.insert_one(data.to_dict(user=user_id))
-            session = self.collection.find_one({"_id": data.inserted_id})
+            self.chat(user_id=user_id, message="开始游戏", extra_data=None)
             if data is None:
                 raise HTTPException(status_code=500, detail="Failed to create new game session")
         except Exception as e:
