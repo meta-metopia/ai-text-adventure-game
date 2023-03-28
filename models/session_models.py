@@ -30,10 +30,9 @@ class GetGameSessionDto:
 
     @staticmethod
     def from_dict(data: dict) -> "GetGameSessionDto":
-
-
         return GetGameSessionDto(
             user=data["user"],
             messages=[GetMessageDto.from_dict(message) for message in data["messages"]],
-            prompt=GetPromptDto.from_dict(data.get("prompt")) if data.get("prompt") is not None else None
+            prompt=GetPromptDto.from_dict(data.get("prompt")) if data.get("prompt") is not None else data.get(
+                "prompt_name")
         )
