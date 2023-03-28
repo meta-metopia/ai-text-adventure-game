@@ -35,10 +35,7 @@ class UserController(Controller):
         :param credentials: user credentials
         :return:
         """
-        try:
-            user = self.collection.find_one({"name": credentials.name, "password": credentials.password})
-            if user is None:
-                raise HTTPException(status_code=401, detail="Invalid credentials")
-            return user
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        user = self.collection.find_one({"name": credentials.name, "password": credentials.password})
+        if user is None:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        return user
