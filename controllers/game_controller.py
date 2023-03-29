@@ -7,6 +7,7 @@ from pymongo.collection import Collection
 
 from controllers.controller import Controller
 from models.message_models import CreateMessageDto, Role, ChatMessageResponseDto
+from models.prompt_models import GetPromptDto
 from models.session_models import GetGameSessionDto, CreateGameSessionDto
 from utils.get_selections import get_selections
 
@@ -28,11 +29,8 @@ class GameController(Controller):
             raise HTTPException(status_code=500, detail=str(e))
 
     def create_new_game_session(self, user_id: str, data: CreateGameSessionDto):
-        try:
-            self.__create_new_game_session__(user_id=user_id, data=data)
-            return {"message": "Session created successfully"}
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        self.__create_new_game_session__(user_id=user_id, data=data)
+        return {"message": "Session created successfully"}
 
     def get_history(self, user_id: str) -> GetGameSessionDto:
         """
@@ -135,17 +133,16 @@ class GameController(Controller):
         :param user_id: id
         :return:
         """
-        try:
-            prompt_collection = self.db["prompts"]
-            prompt = prompt_collection.find_one({"name": data.prompt_name})
-            if prompt is None:
-                raise HTTPException(status_code=404, detail="Prompt not found: " + data.prompt_name)
-            data = self.collection.insert_one(data.to_dict(user=user_id))
-            self.chat(user_id=user_id, message="开始游戏", extra_data=None)
-            if data is None:
-                raise HTTPException(status_code=500, detail="Failed to create new game session")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        prompt_collection = self.db["prompts"]
+        prompt = prompt_collection.find_one({"name": data.prompt_name})
+        if prompt is None:
+            raise HTTPException(status_code=404, detail="Prompt not found: " + data.prompt_name)
+        prompt = GetPromptDto.from_dict(prompt)
+        data = self.collection.insert_one(data.to_dict(user=user_id))
+        if prompt.first_user_message is not None:
+            self.chat(user_id=user_id, message=prompt.first_user_message, extra_data=None)
+        if data is None:
+            raise HTTPException(status_code=500, detail="Failed to create new game session")
 
     def __add_message_to_game_session__(self, user_id: str, message: CreateMessageDto):
         """
