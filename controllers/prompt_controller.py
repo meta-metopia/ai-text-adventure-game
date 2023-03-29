@@ -51,15 +51,13 @@ class PromptController(Controller):
         return ListPromptDto.from_list(prompts)
 
     def update_prompt(self, prompt_name: str, prompt: UpdatePromptDto):
-        try:
-            self.collection.update_one({"name": prompt_name}, {"$set": prompt.to_dict()})
-            return {"message": "Prompt updated successfully"}
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        data = prompt.to_dict()
+        updated_result = self.collection.update_one({"name": prompt_name}, {"$set": data})
+        if updated_result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Prompt not found")
+        return {"message": "Prompt updated successfully"}
 
     def delete_prompt(self, prompt_name: str):
-        try:
-            self.collection.delete_one({"name": prompt_name})
-            return {"message": "Prompt deleted successfully"}
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        self.collection.delete_one({"name": prompt_name})
+        return {"message": "Prompt deleted successfully"}
+
