@@ -72,6 +72,11 @@ def login(user: LoginDto):
     return {"access_token": token}
 
 
+@app.post("/admin/login")
+def admin_login(credentials: HTTPBasicCredentials = Depends(admin_auth)):
+    return {"message": "Logged in as admin"}
+
+
 @app.post("/register")
 def register(user: CreateUserDto):
     """
